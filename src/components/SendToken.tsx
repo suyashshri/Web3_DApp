@@ -11,24 +11,30 @@ const SendToken = () => {
   const wallet = useWallet();
   const { connection } = useConnection();
 
-  const [sender, setSender] = useState(wallet.publicKey?.toBase58());
-  const [reciever, setReceiver] = useState<PublicKey>();
+  const [receiverInput, setReceiverInput] = useState<string>("");
+  const [reciever, setReceiver] = useState<PublicKey | undefined>();
   const [amount, setAmount] = useState<string>();
 
   async function sendToken() {
     if (!amount || !reciever || !wallet.publicKey) {
-      throw new Error("Unvalid input's");
+      alert("Please enter valid inputs.");
+      return;
     }
-    console.log(wallet.publicKey);
-    console.log(reciever);
-    console.log(amount);
+
+    const lamports = parseFloat(amount) * LAMPORTS_PER_SOL;
+
+    if (isNaN(lamports) || lamports <= 0) {
+      alert("Invalid amount");
+      return;
+    }
+    console.log(lamports);
 
     const transaction = new Transaction();
     transaction.add(
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: reciever,
-        lamports: parseInt(amount) * LAMPORTS_PER_SOL,
+        lamports: parseFloat(amount) * LAMPORTS_PER_SOL,
       })
     );
 
@@ -40,23 +46,19 @@ const SendToken = () => {
       <div style={{ display: "flex", gap: "15px" }}>
         <input
           type="text"
-          value={reciever ? reciever.toBase58() : ""}
+          value={receiverInput}
           onChange={(e) => {
+            const input = e.target.value;
+            setReceiverInput(input);
             try {
-              const pubkey = new PublicKey(e.target.value);
-              setReceiver(pubkey);
+              setReceiver(new PublicKey(input));
             } catch {
               setReceiver(undefined);
             }
           }}
           placeholder="Reciver's Address"
         />
-        <input
-          type="text"
-          value={sender}
-          onChange={(e) => setSender(e.target.value)}
-          placeholder="Sender's Address"
-        />
+
         <input
           type="text"
           value={amount}

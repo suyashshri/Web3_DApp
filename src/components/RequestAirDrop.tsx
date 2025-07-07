@@ -2,6 +2,7 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import SendToken from "./SendToken";
+import SignMessage from "./SignMessage";
 
 const RequestAirDrop = () => {
   const [amount, setAmount] = useState<string>();
@@ -41,6 +42,9 @@ const RequestAirDrop = () => {
       </div>
       <div style={{ marginTop: "16px" }}>
         <SendToken />
+      </div>
+      <div style={{ marginTop: "16px" }}>
+        <SignMessage />
       </div>
     </div>
   );
